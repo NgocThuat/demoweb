@@ -288,7 +288,6 @@
         .result-count {
             font-size: 1.8rem;
             font-weight: 700;
-            color: #4285f4;
         }
         
         .result-actions {
@@ -429,7 +428,6 @@
         .stat-value {
             font-size: 1.5rem;
             font-weight: 700;
-            color: #4285f4;
         }
         
         .stat-label {
@@ -534,7 +532,7 @@
         
         .iframe-container {
             width: 100%;
-            height: 80vh;
+            height: 100vh;
             min-height: 600px;
             border: 1px solid #dadce0;
             border-radius: 8px;
@@ -550,20 +548,63 @@
             font-size: 1.2rem;
         }
         
-        .iframe-container {
-    width: 100%;
-    height: 100vh; 
-    min-height: 800px; 
-    border: 1px solid #dadce0;
-    border-radius: 8px;
-    overflow: hidden;
-}
+        .tool-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
 
-.tool-iframe {
-    width: 100%;
-    height: 100%;
-    border: none;
-}
+        /* Màu sắc cho các ô đếm */
+        .stat-item:nth-child(1) .stat-value {
+            color: #34a853;
+        }
+        
+        .stat-item:nth-child(2) .stat-value {
+            color: #ff9900;
+        }
+        
+        .stat-item:nth-child(3) .stat-value {
+            color: #4285f4;
+        }
+
+        /* Màu sắc cho các kết quả */
+        #goodCount {
+            color: #34a853;
+        }
+        
+        #verifiedCount {
+            color: #ff9900;
+        }
+        
+        #disabledCount {
+            color: #ea4335;
+        }
+        
+        #notExistCount {
+            color: #fbbc04;
+        }
+        
+        #unknownCount {
+            color: #9aa0a6;
+        }
+
+        /* Telegram link styles */
+        .telegram-link {
+            color: #0088cc;
+            text-decoration: none;
+            margin-left: 5px;
+            font-weight: 600;
+            padding: 5px 10px;
+            border-radius: 4px;
+            background-color: rgba(0, 136, 204, 0.1);
+            transition: all 0.3s;
+        }
+
+        .telegram-link:hover {
+            color: white;
+            background-color: #0088cc;
+            text-decoration: none;
+        }
     </style>
 </head>
 <body>
@@ -578,7 +619,7 @@
         
         <div class="tabs">
             <div class="tab active" data-tab="checker">Account Checker</div>
-            <div class="tab" data-tab="tools">Data Tools</div>
+            <div class="tab" data-tab="tools">Split Gmail</div>
             <div class="tab" data-tab="twofa">2FA Tools</div>
         </div>
         
@@ -636,6 +677,18 @@
                 <div class="output-section">
                     <h2>Results</h2>
                     
+                    <h3>Result Details:</h3>
+                    <table class="results-table">
+                        <thead>
+                            <tr>
+                                <th>Email Address</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="resultsBody">
+                        </tbody>
+                    </table>
+
                     <div class="results">
                         <div class="result-box">
                             <div class="result-info">
@@ -708,27 +761,11 @@
                             </div>
                         </div>
                     </div>
-                    
-                    <h3>Result Details:</h3>
-                    <table class="results-table">
-                        <thead>
-                            <tr>
-                                <th>Email Address</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody id="resultsBody">
-                            <!-- Results will be populated here -->
-                        </tbody>
-                    </table>
                 </div>
             </div>
         </div>
         
         <div class="tab-content" id="tools-tab">
-            
-           
-            
             <div class="tool-container">
                 <div class="iframe-header">External Data Processor</div>
                 <div class="iframe-container">
@@ -739,7 +776,7 @@
         
         <div class="tab-content" id="twofa-tab">
             <div class="tool-container">
-                <div class="iframe-header">2FA Verification Tools</div>
+                <div class="iframe-header">INPUT KEY 2FA TO GET CODE</div>
                 <div class="iframe-container">
                     <iframe class="tool-iframe" src="https://2fa.fb.rip/" frameborder="0"></iframe>
                 </div>
@@ -752,18 +789,17 @@
         </div>
         
         <footer>
-    <p>
-        GmailTrust247 
-        <!-- <a href="https://t.me/GmailTrust247" target="_blank" class="telegram-link"> -->
-            <!-- <i class="fab fa-telegram"></i> Contact Us -->
-        <!-- </a> -->
-    </p>
-</footer>
+            <p>
+                GmailTrust247 
+                <!-- <a href="https://t.me/GmailTrust247" target="_blank" class="telegram-link"> -->
+                    <!-- <i class="fab fa-telegram"></i> Contact Us -->
+                <!-- </a> -->
+            </p>
+        </footer>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // DOM elements
             const accountList = document.getElementById('accountList');
             const slowMode = document.getElementById('slowMode');
             const fastMode = document.getElementById('fastMode');
@@ -775,16 +811,9 @@
             const successMessage = document.getElementById('successMessage');
             const messageText = document.getElementById('messageText');
             
-            // Tab elements
             const tabs = document.querySelectorAll('.tab');
             const tabContents = document.querySelectorAll('.tab-content');
             
-            // Tool elements
-            const toolData = document.getElementById('toolData');
-            const processDataBtn = document.getElementById('processData');
-            const clearDataBtn = document.getElementById('clearData');
-            
-            // Count elements
             const goodCount = document.getElementById('goodCount');
             const verifiedCount = document.getElementById('verifiedCount');
             const disabledCount = document.getElementById('disabledCount');
@@ -794,7 +823,6 @@
             const checkedCount = document.getElementById('checkedCount');
             const totalAccounts = document.getElementById('totalAccounts');
             
-            // Current mode
             let currentMode = 'slow';
             let results = {};
             let resultData = {
@@ -805,20 +833,16 @@
                 'unknown': []
             };
             
-            // Initialize app
             initApp();
             
             function initApp() {
-                // Tab switching
                 tabs.forEach(tab => {
                     tab.addEventListener('click', function() {
                         const tabId = this.getAttribute('data-tab');
                         
-                        // Update active tab
                         tabs.forEach(t => t.classList.remove('active'));
                         this.classList.add('active');
                         
-                        // Show corresponding content
                         tabContents.forEach(content => {
                             content.classList.remove('active');
                             if (content.id === `${tabId}-tab`) {
@@ -828,7 +852,6 @@
                     });
                 });
                 
-                // Mode selection
                 slowMode.addEventListener('click', function() {
                     slowMode.classList.add('active');
                     fastMode.classList.remove('active');
@@ -841,7 +864,6 @@
                     currentMode = 'fast';
                 });
                 
-                // File upload
                 fileUpload.addEventListener('click', function() {
                     fileInput.click();
                 });
@@ -858,7 +880,6 @@
                     }
                 });
                 
-                // Drag and drop for file upload
                 fileUpload.addEventListener('dragover', function(e) {
                     e.preventDefault();
                     fileUpload.style.borderColor = '#4285f4';
@@ -890,7 +911,6 @@
                     }
                 });
                 
-                // Check button functionality
                 checkBtn.addEventListener('click', function() {
                     const accounts = getAccountList();
                     
@@ -902,7 +922,6 @@
                     checkAccounts(accounts, currentMode);
                 });
                 
-                // Action buttons functionality
                 const actionButtons = document.querySelectorAll('.action-btn');
                 actionButtons.forEach(button => {
                     button.addEventListener('click', function() {
@@ -917,21 +936,10 @@
                     });
                 });
                 
-                // Tool buttons functionality
-                processDataBtn.addEventListener('click', function() {
-                    processData();
-                });
-                
-                clearDataBtn.addEventListener('click', function() {
-                    toolData.value = '';
-                });
-                
-                // Update counts when account list changes
                 accountList.addEventListener('input', function() {
                     updateCounts();
                 });
                 
-                // Initialize counts
                 updateCounts();
             }
             
@@ -943,7 +951,6 @@
                     .map(line => line.trim())
                     .filter(line => line.length > 0)
                     .map(email => {
-                        // Remove anything after @gmail.com as per instructions
                         const atIndex = email.indexOf('@gmail.com');
                         if (atIndex !== -1) {
                             return email.substring(0, atIndex + 10);
@@ -957,16 +964,14 @@
                 const total = accounts.length;
                 totalAccounts.textContent = total;
                 remainingCount.textContent = total;
-                checkedCount.textContent = 0; // Reset về 0 khi thay đổi danh sách
+                checkedCount.textContent = 0;
                 
-                // Reset các kết quả
                 goodCount.textContent = '0';
                 verifiedCount.textContent = '0';
                 disabledCount.textContent = '0';
                 notExistCount.textContent = '0';
                 unknownCount.textContent = '0';
                 
-                // Xóa kết quả cũ trong bảng
                 resultsBody.innerHTML = '';
             }
             
@@ -982,22 +987,18 @@
             }
             
             function checkAccounts(accounts, mode) {
-                // Show loading
                 loadingElement.style.display = 'block';
                 checkBtn.disabled = true;
                 checkBtn.textContent = 'Checking...';
                 
-                // Generate random API key
                 const randomKey = generateRandomApiKey();
                 
-                // Prepare the request data
                 const requestData = {
                     mail: accounts,
                     key: randomKey,
                     fastCheck: mode === 'fast'
                 };
                 
-                // Make API request
                 fetch('https://gmailver.com/php/check1.php', {
                     method: 'POST',
                     headers: {
@@ -1015,13 +1016,8 @@
                 })
                 .then(data => {
                     if (data.status) {
-                        // Update stats
                         checkedCount.textContent = accounts.length;
-                        
-                        // Process and display results
                         processApiResults(data.data, accounts.length);
-                        
-                        // Show success message
                         showSuccess(`Checked ${accounts.length} accounts successfully. Response time: ${data.responseTime}ms`);
                     } else {
                         throw new Error(data.message || 'API returned error status');
@@ -1030,12 +1026,9 @@
                 .catch(error => {
                     console.error('Error:', error);
                     alert('An error occurred while checking accounts: ' + error.message);
-                    
-                    // Fallback to simulated results if API fails
                     simulateResults(accounts);
                 })
                 .finally(() => {
-                    // Hide loading
                     loadingElement.style.display = 'none';
                     checkBtn.disabled = false;
                     checkBtn.textContent = 'Check Accounts';
@@ -1044,7 +1037,6 @@
             
             function processApiResults(apiData, totalAccounts) {
                 results = {};
-                // Reset result data
                 resultData = {
                     'good': [],
                     'verified': [],
@@ -1061,13 +1053,11 @@
                     'Unknown': 0
                 };
                 
-                // Process API results
                 apiData.forEach(item => {
                     const email = item.email;
                     let status = 'Unknown';
                     let statusKey = 'unknown';
                     
-                    // Map API status to our status categories
                     switch (item.status.toLowerCase()) {
                         case 'live':
                             status = 'Good';
@@ -1082,7 +1072,7 @@
                             resultData.verified.push(email);
                             break;
                         case 'die':
-                        case 'disabled': // Thêm case 'disabled' để xử lý trạng thái disabled
+                        case 'disabled':
                             status = 'Disabled';
                             statusKey = 'disabled';
                             counts.Disabled++;
@@ -1105,7 +1095,6 @@
                     results[email] = status;
                 });
                 
-                // Handle any accounts not returned by API
                 const processedEmails = apiData.map(item => item.email);
                 const allAccounts = getAccountList();
                 
@@ -1117,14 +1106,11 @@
                     }
                 });
                 
-                // Display results
                 displayResults(results, counts);
             }
             
             function simulateResults(accounts) {
-                // Fallback function if API fails
                 results = {};
-                // Reset result data
                 resultData = {
                     'good': [],
                     'verified': [],
@@ -1141,12 +1127,8 @@
                     'Unknown': 0
                 };
                 
-                // Process each account with simulated results
                 accounts.forEach(account => {
-                    // Clean the email
                     const cleanEmail = account.trim().toLowerCase();
-                    
-                    // Generate random result
                     const statuses = ['Good', 'Verified', 'Disabled', 'Not Exist', 'Unknown'];
                     const result = statuses[Math.floor(Math.random() * statuses.length)];
                     const resultKey = result.toLowerCase().replace(' ', '-');
@@ -1154,7 +1136,6 @@
                     results[cleanEmail] = result;
                     counts[result]++;
                     
-                    // Store in resultData for copy/download
                     if (resultData[resultKey]) {
                         resultData[resultKey].push(cleanEmail);
                     } else {
@@ -1162,25 +1143,19 @@
                     }
                 });
                 
-                // Update stats for simulation
                 checkedCount.textContent = accounts.length;
-                
-                // Display results
                 displayResults(results, counts);
             }
             
             function displayResults(results, counts) {
-                // Update counts
                 goodCount.textContent = counts.Good || 0;
                 verifiedCount.textContent = counts.Verified || 0;
                 disabledCount.textContent = counts.Disabled || 0;
                 notExistCount.textContent = counts['Not Exist'] || 0;
                 unknownCount.textContent = counts.Unknown || 0;
                 
-                // Clear previous results
                 resultsBody.innerHTML = '';
                 
-                // Add new results
                 for (const [email, status] of Object.entries(results)) {
                     const row = document.createElement('tr');
                     
@@ -1202,7 +1177,6 @@
                 let textToCopy = '';
                 
                 if (type === 'all') {
-                    // Copy all results
                     const rows = resultsBody.querySelectorAll('tr');
                     if (rows.length === 0) {
                         alert('No results to copy');
@@ -1211,11 +1185,9 @@
                     
                     rows.forEach(row => {
                         const email = row.cells[0].textContent;
-                        const status = row.cells[1].textContent;
                         textToCopy += `${email}\n`;
                     });
                 } else {
-                    // Copy specific type
                     if (resultData[type] && resultData[type].length > 0) {
                         textToCopy = resultData[type].join('\n');
                     } else {
@@ -1224,7 +1196,6 @@
                     }
                 }
                 
-                // Copy to clipboard
                 navigator.clipboard.writeText(textToCopy.trim())
                     .then(() => {
                         showSuccess(`Copied ${textToCopy.trim().split('\n').length} ${type.replace('-', ' ')} accounts to clipboard`);
@@ -1240,7 +1211,6 @@
                 let filename = '';
                 
                 if (type === 'all') {
-                    // Download all results
                     const rows = resultsBody.querySelectorAll('tr');
                     if (rows.length === 0) {
                         alert('No results to download');
@@ -1255,7 +1225,6 @@
                     
                     filename = 'all_results.txt';
                 } else {
-                    // Download specific type
                     if (resultData[type] && resultData[type].length > 0) {
                         content = resultData[type].join('\n');
                         filename = `${type}_results.txt`;
@@ -1265,7 +1234,6 @@
                     }
                 }
                 
-                // Create download link
                 const blob = new Blob([content], { type: 'text/plain' });
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
@@ -1274,7 +1242,6 @@
                 document.body.appendChild(a);
                 a.click();
                 
-                // Clean up
                 setTimeout(() => {
                     document.body.removeChild(a);
                     URL.revokeObjectURL(url);
@@ -1282,53 +1249,26 @@
                 }, 100);
             }
             
-            function processData() {
-                const data = toolData.value.trim();
-                if (!data) {
-                    alert('Please enter some data to process');
-                    return;
-                }
-                
-                const lines = data.split('\n').filter(line => line.trim().length > 0);
-                
-                // Simple data processing example
-                const processedLines = lines.map(line => {
-                    // Split by "---" and rejoin with spaces
-                    return line.split('---').join(' ');
-                });
-                
-                // Update the textarea with processed data
-                toolData.value = processedLines.join('\n');
-                
-                showSuccess(`Processed ${lines.length} lines of data`);
-            }
-            
             function showSuccess(message) {
                 messageText.textContent = message;
                 successMessage.style.display = 'block';
                 
-                // Hide message after 10 seconds
                 setTimeout(() => {
                     successMessage.style.display = 'none';
                 }, 10000);
             }
             
-            
             window.switchToToolsTab = function() {
-                
                 document.querySelectorAll('.tab-content').forEach(content => {
                     content.classList.remove('active');
                 });
                 
-                
                 document.getElementById('tools-tab').classList.add('active');
-                
                 
                 document.querySelectorAll('.tab').forEach(tab => {
                     tab.classList.remove('active');
                 });
                 document.querySelector('.tab[data-tab="tools"]').classList.add('active');
-                
                 
                 window.scrollTo(0, 0);
             }
