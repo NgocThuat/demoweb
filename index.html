@@ -367,14 +367,22 @@
             font-weight: 500;
         }
         
-        footer {
-            text-align: center;
-            width: 100%;
-            background: #f8f9fa;
-            color: #5f6368;
-            font-size: 0.9rem;
-            border-top: 1px solid #eaecef;
-        }
+       footer {
+    /* Đảm bảo chiều rộng 100% và loại bỏ lề của body */
+    width: 100%; 
+    margin: 0; 
+    padding: 30px 0; /* Tăng đệm trên và dưới để tạo không gian */
+    
+    /* Thiết kế hiện đại hơn */
+    background: #ffffff; /* Hoặc màu trắng sáng */
+    /* Thay vì border-top nhạt, dùng shadow nhẹ để phân tách */
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05); 
+    
+    /* Căn chỉnh nội dung */
+    text-align: center;
+    color: #495057; /* Màu chữ tối hơn, dễ đọc hơn */
+    font-size: 1rem; /* Kích thước chữ tiêu chuẩn */
+}
         
         .route-info {
             background: #e8f0fe;
@@ -1298,6 +1306,7 @@
     </script>
 </body>
 </html>
+
 
 
 
